@@ -21,21 +21,12 @@ enum Command {
     Help,
 }
 
-struct Cell {
-    cell_type: CellType,
-}
 
-impl Cell {
-    pub fn change_type(&mut self, new_type: CellType) {
-        self.cell_type = new_type;
-    }
-
-    pub fn symbol(&self) -> char {
-        match self.cell_type {
-            CellType::Blank => ' ',
-            CellType::Cross => 'X', 
-            CellType::Circle => 'O',
-        }
+fn cell_symbol(cell: &CellType) -> char {
+    match cell {
+        CellType::Blank => ' ',
+        CellType::Cross => 'X', 
+        CellType::Circle => 'O',
     }
 }
 
@@ -50,9 +41,9 @@ fn clear_screen() {
     print!("\x1B[2J\x1B[1;1H");
 }
 
-fn render_cells(cells: &Vec<Cell>) {
+fn render_cells(cells: &Vec<CellType>) {
     for i in 0..9 {
-        print!("{}", cells[i].symbol());
+        print!("{}", cell_symbol(&cells[i]));
         if i == 2 || i == 5 || i == 8 {
             println!();
             println!("―――――");
@@ -94,7 +85,7 @@ fn main() {
     print_help();
     println!();
 
-    let mut cells: Vec<Cell> = Vec::new();
+    let mut cells: Vec<CellType> = Vec::new();
     let mut game_finished = false;
     let mut need_help = true;
     let mut current_player_is_cross = true;
@@ -102,7 +93,7 @@ fn main() {
     let mut moves = 0;
 
     for _i in 0..9 {
-        cells.push(Cell { cell_type: CellType::Blank });
+        cells.push(CellType::Blank);
     }
 
     while !game_finished {
@@ -137,10 +128,10 @@ fn main() {
                     continue
                 }
                 let ind = usize::from(number) - 1;
-                if cells[ind].cell_type != CellType::Blank {
+                if cells[ind] != CellType::Blank {
                     continue
                 }
-                cells[ind].change_type(new_cell_type);
+                cells[ind] = new_cell_type;
 
             }
         }
@@ -152,9 +143,9 @@ fn main() {
             (1, 5, 9), (3, 5, 7)];
 
         for (i1, i2, i3) in indexes_to_check {
-            let type1 = &cells[i1-1].cell_type;
-            let type2 = &cells[i2-1].cell_type;
-            let type3 = &cells[i3-1].cell_type;
+            let type1 = &cells[i1-1];
+            let type2 = &cells[i2-1];
+            let type3 = &cells[i3-1];
             if type1 == type2 && type2 == type3 && type1 != &CellType::Blank {
                 winner = if current_player_is_cross {
                     GameResult::CrossWin 
@@ -182,4 +173,6 @@ fn main() {
         GameResult::CrossWin => println!("Cross player win!"),
         GameResult::CircleWin => println!("Circle player win!"),
     }
+
+    
 }
