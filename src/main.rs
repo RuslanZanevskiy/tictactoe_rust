@@ -1,4 +1,4 @@
-use std::io::{ self, Write };
+use std::io::{ self, Read, Write };
 use std::process::exit;
 
 
@@ -53,7 +53,7 @@ fn render_cells(cells: &Vec<CellType>) {
     }
 }
 
-fn get_command() -> Result<Command, io::Error> {
+fn get_command() -> io::Result<Command> {
     print!(">>> ");
     io::stdout().flush()?;
 
@@ -132,12 +132,11 @@ fn main() {
                     continue
                 }
                 cells[ind] = new_cell_type;
-
+                moves += 1
             }
         }
-        moves += 1;
         
-        // ugly hardcode
+        // hardcode
         let indexes_to_check = [(1, 2, 3), (4, 5, 6), (7, 8, 9),
             (1, 4, 7), (2, 5, 8), (3, 6, 9),
             (1, 5, 9), (3, 5, 7)];
@@ -156,7 +155,7 @@ fn main() {
                 break
             }
         }
-        if !game_finished && moves == 9 {
+        if !game_finished && moves >= 9 {
             winner = GameResult::Draw;
             game_finished = true;
         }
@@ -174,5 +173,6 @@ fn main() {
         GameResult::CircleWin => println!("Circle player win!"),
     }
 
-    
+    println!("Press enter to exit.");
+    io::stdin().read(&mut [0]).unwrap();
 }
