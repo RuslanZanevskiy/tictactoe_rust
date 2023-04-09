@@ -132,7 +132,8 @@ fn main() {
                     continue
                 }
                 cells[ind] = new_cell_type;
-                moves += 1
+                moves += 1;
+                current_player_is_cross = !current_player_is_cross;
             }
         }
         
@@ -146,7 +147,7 @@ fn main() {
             let type2 = &cells[i2-1];
             let type3 = &cells[i3-1];
             if type1 == type2 && type2 == type3 && type1 != &CellType::Blank {
-                winner = if current_player_is_cross {
+                winner = if type1 == &CellType::Cross {
                     GameResult::CrossWin 
                 } else {
                     GameResult::CircleWin
@@ -159,8 +160,6 @@ fn main() {
             winner = GameResult::Draw;
             game_finished = true;
         }
-
-        current_player_is_cross = !current_player_is_cross;
     }
 
     clear_screen();
